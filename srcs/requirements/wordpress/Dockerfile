@@ -29,4 +29,3 @@ RUN ls -l /var/www/html
 # Définir l'entrée et les commandes par défaut
 ENTRYPOINT ["sh", "/var/www/html/config.sh"]
 CMD ["php-fpm7.3", "-F"]
-

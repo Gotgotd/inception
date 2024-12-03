@@ -1,25 +1,19 @@
-#!/bin/bash
-
-# Démarrer MariaDB en arrière-plan (si nécessaire dans le contexte d'un conteneur)
 mysqld_safe &
+sleep 10
 
-# Attendre que le service MariaDB soit prêt
-sleep 30
+echo "User creation ongoing..."
 
-# Créer la base de données si elle n'existe pas
-mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
+mysql -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';"
 
-# Créer l'utilisateur et lui accorder des privilèges sur la base de données
-mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "GRANT ALL ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'; FLUSH PRIVILEGES;"
+mysql -e "FLUSH PRIVILEGES;"
 
-# Modifier le mot de passe du root
-mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
+echo "Generating database..."
 
-# Rafraîchir les privilèges
-mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES;"
+mysql -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
 
-# Arrêter proprement MariaDB avant de démarrer le processus principal
-mysqladmin -u root -p"${MYSQL_ROOT_PASSWORD}" shutdown
+echo "Shutting down MariaDB...."
 
-# Lancer MariaDB en mode sécurisé
-exec mysqld_safe
+mysqladmin -u root -p$MYSQL_ROOT_PASSWORD shutdown
+
+exec mysqld
