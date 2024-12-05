@@ -53,12 +53,14 @@ services:
 
 volumes:
   mariadb:
+    name: mariadb
     driver: local
     driver_opts:
       type: "none"
       device: '/home/gautier/data/mariadb'
       o: "bind"
   wordpress:
+    name: wordpress
     driver: local
     driver_opts:
       type: "none"
