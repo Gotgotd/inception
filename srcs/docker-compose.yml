@@ -1,4 +1,3 @@
-version: '3'
 services:
   mariadb:
     container_name: mariadb
@@ -22,7 +21,9 @@ services:
       context: requirements/nginx
       dockerfile: Dockerfile
     volumes:
-      - wordpress:/var/www/html # Correction ici
+      - type: volume
+        source: wordpress
+        target: /var/www/html
     ports:
       - "443:443"
     env_file:
@@ -69,5 +70,5 @@ volumes:
 
 networks:
   inception:
+    name: inception
     driver: bridge
-
