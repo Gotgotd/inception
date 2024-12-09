@@ -9,6 +9,17 @@ done
 # Navigate to the WordPress installation directory
 cd /var/www/html
 
+# OPTION 1 : Force the download of wordpress
+echo "Forcing WordPress core files download..."
+rm -rf /var/www/html/*
+./wp-cli.phar core download --allow-root
+
+# OPTION 2 : cleaning up DataBase before using
+if ./wp-cli.phar core is-installed --allow-root; then
+    echo "Cleaning up existing WordPress installation..."
+    ./wp-cli.phar db reset --yes --allow-root
+fi
+
 # Check if WP-CLI is already installed
 if [ ! -f wp-cli.phar ]; then
     echo "Downloading WP-CLI..."
