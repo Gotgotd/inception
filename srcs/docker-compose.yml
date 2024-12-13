@@ -23,7 +23,7 @@ services:
     volumes:
       - type: volume
         source: wordpress
-        target: /var/www/html
+        target: /var/www/wordpress
     ports:
       - "443:443"
     env_file:
@@ -51,6 +51,9 @@ services:
     restart: always
     expose: 
       - "9000"
+    extra_hosts:
+      - "wordpress.inception:127.0.0.1"
+
 
 volumes:
   mariadb:
@@ -58,14 +61,14 @@ volumes:
     driver: local
     driver_opts:
       type: "none"
-      device: '/home/gautier/data/mariadb'
+      device: '/home/gdaignea/data/mariadb'
       o: "bind"
   wordpress:
     name: wordpress
     driver: local
     driver_opts:
       type: "none"
-      device: "/home/gautier/data/wordpress"
+      device: "/home/gdaignea/data/wordpress"
       o: "bind"
 
 networks:

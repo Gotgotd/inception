@@ -30,6 +30,7 @@ COPY tools/auto_config.sh /var/www/html/auto_config.sh
 RUN chmod +x /var/www/html/auto_config.sh
 
 # Start php-fpm in foreground to keep the container running
-CMD ["php-fpm7.3", "-F"]
+#CMD ["php-fpm7.3", "-F"]
 
-ENTRYPOINT ["sh", "/var/www/html/auto_config.sh"]
+#ENTRYPOINT ["sh", "/var/www/html/auto_config.sh"]
+CMD ["/bin/bash", "-c", "/var/www/html/auto_config.sh && php-fpm7.3 -F"]
