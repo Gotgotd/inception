@@ -1,77 +1,59 @@
 services:
-  mariadb:
-    container_name: mariadb
-    image: mariadb
-    build:
-      context: requirements/mariadb
-      dockerfile: Dockerfile
-    volumes:
-      - mariadb:/var/lib/mysql
-    expose:
-      - "3306"
-    env_file:
-      - .env
-    networks:
-      - inception
 
   nginx:
+    build: requirements/nginx
     container_name: nginx
-    image: nginx
-    build:
-      context: requirements/nginx
-      dockerfile: Dockerfile
-    volumes:
-      - type: volume
-        source: wordpress
-        target: /var/www/wordpress
+    depends_on:
+      - wp-php
+    env_file: .env
     ports:
       - "443:443"
-    env_file:
-      - .env
-    restart: always
     networks:
       - inception
-    depends_on:
-      - wordpress
-
-  wordpress:
-    container_name: wordpress
-    image: wordpress
-    env_file:
-      - .env
     volumes:
-      - wordpress:/var/www/wordpress
-    networks:
-      - inception
-    build:
-      context: requirements/wordpress
-      dockerfile: Dockerfile
+      - web:/var/www/html
+    restart: always
+
+  wp-php:
+    build: requirements/wp-php
+    container_name: wp-php
     depends_on:
       - mariadb
+    env_file: .env
+    volumes:
+      - web:/var/www/html
+    networks:
+      - inception
     restart: always
-    expose: 
-      - "9000"
-    extra_hosts:
-      - "wordpress.inception:127.0.0.1"
 
+  mariadb:
+    build: requirements/mariadb
+    container_name: mariadb
+    env_file: .env
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - inception
+    restart: always
 
 volumes:
-  mariadb:
+  db:
     name: mariadb
     driver: local
     driver_opts:
-      type: "none"
-      device: '/home/gdaignea/data/mariadb'
-      o: "bind"
-  wordpress:
+      type: 'none'
+      o: 'bind'
+      device: ~/data/db
+  web:
     name: wordpress
     driver: local
     driver_opts:
-      type: "none"
-      device: "/home/gdaignea/data/wordpress"
-      o: "bind"
+      type: 'none'
+      o: 'bind'
+      device: ~/data/web
 
 networks:
   inception:
-    name: inception
     driver: bridge

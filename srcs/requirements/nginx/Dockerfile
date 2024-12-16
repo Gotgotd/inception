@@ -1,17 +1,16 @@
-FROM debian:buster
+FROM debian:bullseye
 
-RUN apt-get update && apt-get upgrade -y && \ 
-    apt-get install nginx -y && \ 
-    mkdir -p /etc/nginx/ssl && \ 
-    apt-get install -y curl vim openssl && \ 
-    apt-get clean && \ 
-    openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt -keyout /etc/nginx/ssl/inception.key -subj "/C=FR/ST=IDF/L=PARIS/0=42/CN=gdaignea.42.fr/UID=gdaignea" && \ 
-    mkdir -p /var/run/nginx
+RUN apt update -y && apt upgrade -y && apt install nginx openssl -y
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 443
+RUN mkdir -p /etc/nginx/ssl/
 
-RUN chmod -R 775 /var/www/html && chown -R www-data:www-data /var/www/html
+COPY tools/nginx.key /etc/nginx/ssl/nginx.key
+COPY tools/nginx.crt /etc/nginx/ssl/nginx.crt
+
+RUN mkdir -p /run/nginx
+
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]

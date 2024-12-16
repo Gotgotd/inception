@@ -1,7 +1,12 @@
-all:
-	@docker compose -f ./srcs/docker-compose.yml up -d --build
-update:
-	@docker compose -f ./srcs/docker-compose.yml up -d --build --force-recreate --remove-orphans
+run:
+	sudo mkdir -p ~/data/db ~/data/web
+	sudo chmod 700 ~/data/db && sudo chmod +x ~/data/web
+	docker compose -f ./srcs/docker-compose.yml up -d --build
+
+clean:
+	docker compose -f srcs/docker-compose.yml down -v --rmi all
+	sudo rm -rf ~/gdaignea/data/db ~/gdaignea/data/web
+
 start:
 	@docker compose -f ./srcs/docker-compose.yml start
 status:
@@ -13,5 +18,5 @@ stop:
 down:
 	@docker compose -f ./srcs/docker-compose.yml down -v --remove-orphans
 	@docker volume prune -f
-	
-re: down all
+
+re: clean run

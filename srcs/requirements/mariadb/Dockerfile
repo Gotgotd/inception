@@ -1,20 +1,13 @@
-FROM debian:buster
-
-ENV MYSQL_ROOT_PASSWORD=123
-ENV MYSQL_DATABASE=myDataBase
-ENV MYSQL_USER=gdaignea
-ENV MYSQL_PASSWORD=123
-
-RUN apt-get update && apt-get upgrade -y && \ 
-    apt-get install -y mariadb-server && \ 
-    apt-get clean && \ 
-    mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld
-
-COPY conf/my.cnf /etc/mysql/mariadb.conf.d/
+FROM debian:bullseye
 
 EXPOSE 3306
 
-COPY tools/entrypoint.sh /home/gdaignea/entrypoint.sh
+RUN apt update -y && apt upgrade -y && apt install mariadb-server -y
 
-RUN chmod +x /home/gdaignea/entrypoint.sh
-ENTRYPOINT ["sh", "/home/gdaignea/entrypoint.sh"]
+COPY conf/50-server.cnf	/etc/mysql/mariadb.conf.d/50-server.cnf
+COPY tools/init.sh /etc/mysql/init.sh
+
+RUN chmod +x /etc/mysql/init.sh
+
+ENTRYPOINT ["/etc/mysql/init.sh"]
+CMD ["mariadbd"]
