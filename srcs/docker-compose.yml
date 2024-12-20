@@ -2,6 +2,7 @@ services:
 
   nginx:
     build: requirements/nginx
+    image: nginx
     container_name: nginx
     depends_on:
       - wp-php
@@ -16,6 +17,7 @@ services:
 
   wp-php:
     build: requirements/wp-php
+    image: wordpress
     container_name: wp-php
     depends_on:
       - mariadb
@@ -28,6 +30,7 @@ services:
 
   mariadb:
     build: requirements/mariadb
+    image: mariadb
     container_name: mariadb
     env_file: .env
     volumes:
@@ -36,7 +39,7 @@ services:
       - "3306:3306"
     networks:
       - inception
-    restart: always
+    restart: unless-stopped
 
 volumes:
   db:
@@ -45,15 +48,16 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: ~/data/db
+      device: /home/gdaignea/data/db
   web:
     name: wordpress
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: ~/data/web
+      device: /home/gdaignea/data/web
 
 networks:
   inception:
+    name: inception
     driver: bridge
